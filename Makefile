@@ -10,6 +10,9 @@ docker-push-%:
 	sudo docker push docker.io/fabiand/$*:latest
 
 deploy:
-	kubectl create -f
+	kubectl create $(patsubst %,-f %,$(wildcard */pod.yaml))
+
+undeploy:
+	kubectl delete $(patsubst %,-f %,$(wildcard */pod.yaml))
 
 .PHONY: build

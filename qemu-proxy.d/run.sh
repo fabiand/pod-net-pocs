@@ -12,7 +12,7 @@ echo ifconfig eth0 up
 sleep 1
 echo udhcpc
 sleep 2
-echo "while true; do { echo -e 'HTTP/1.1 200 OK\r\n'; date; } | nc -l -p 80; done & cat"
+echo "while true; do { echo -e 'HTTP/1.1 200 OK\r\n'; hostname ; date; } | nc -l -p 80; done & cat"
 }
 
 

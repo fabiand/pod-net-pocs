@@ -1,6 +1,6 @@
 #!/bin/sh
 
-check_host() { curl -s $1 && echo " $1 OK" || echo " $1 FAIL" ; }
+check_host() { nc $1 80 && echo " $1 OK" || echo " $1 FAIL" ; }
 
 while sleep 2;
 do
