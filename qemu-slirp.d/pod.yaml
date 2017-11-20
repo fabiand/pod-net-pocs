@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: qemu-slirp
+  labels:
+    app: qemu-slirp
+spec:
+  containers:
+  - name: qemu
+    image: fabiand/qemu-slirp
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: qemu-slirp-date
+spec:
+  selector:
+    app: qemu-slirp
+  ports:
+  - protocol: TCP
+    port: 80
