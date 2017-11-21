@@ -12,7 +12,7 @@ echo ifconfig eth0 up
 sleep 1
 echo udhcpc
 sleep 2
-echo "while true; do { echo -e 'HTTP/1.1 200 OK\r\n'; hostname ; date; } | nc -l -p 80; done & cat"
+echo "while true; do { echo -e 'HTTP/1.1 200 OK\r\n'; echo ping ; date; } | nc -l -p 80; done & cat"
 }
 
 
@@ -30,17 +30,24 @@ dnsmasq --strict-order --except-interface=lo --interface=br0 --listen-address=19
 # Allow guest -> world -- using nat
 iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
 
+if [[ "$MODE" == "proxy" ]]; then
 # Allow port -> quest -- using tcp proxy
 cat > tcp.cfg <<EOF
 defaults
   mode                    tcp
 frontend main
-  bind *:80
+  bind *:80-8000
   default_backend guest
 backend guest
   server guest 192.168.169.1:80 maxconn 2048
 EOF
 haproxy -f tcp.cfg -d &
+
+elif [[ "$MODE" == "dnat" ]]; then
+# Allow port -> quest -- using dnat
+IFNAME=$(ip a s eth0 | grep "inet " | awk '{print $2;}')
+iptables -t nat -A PREROUTING -p tcp -d $IFNAME -j DNAT --to-destination 192.168.169.1
+fi
 
 (sleep 2 ; ip l set dev tap0 up ; ip l set dev tap0 master br0 ; ) &
 in_guest | qemu-system-x86_64 -smp 4 -machine pc,accel=kvm:tcg -nographic -drive file=iscsi://iscsi-demo-target.default/iqn.2017-01.io.kubevirt:sn.42/2,copy-on-read=on -net tap,ifname=tap0,script=no,downscript=0 -net nic,macaddr=52:54:00:12:34:44

@@ -1,4 +1,5 @@
-IMAGES=$(patsubst %.d,%,$(wildcard *.d))
+DIRS=$(wildcard *.d)
+IMAGES=$(patsubst %.d,%,$(DIRS))
 
 build: $(patsubst %,docker-build-%,$(IMAGES))
 push: $(patsubst %,docker-push-%,$(IMAGES))
