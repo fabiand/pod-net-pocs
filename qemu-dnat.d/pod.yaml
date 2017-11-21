@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: qemu-dnat
+  labels:
+    app: qemu-dnat
+spec:
+  securityContext:
+    runAsUser: 0
+  containers:
+  - name: qemu-dnat
+    image: fabiand/qemu-dnat
+    securityContext:
+      privileged: true
+      runAsUser: 0
+    env:
+    - name: MODE
+      value: dnat
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: qemu-dnat-date
+spec:
+  selector:
+    app: qemu-dnat
+  ports:
+  - protocol: TCP
+    port: 80
